@@ -14,6 +14,8 @@ class Node(object):
 
     linked_with = None
 
+    anchored = False
+
     def __init__(self, name, value=None):
         self.name = name
         # TODO do we realy need this if?

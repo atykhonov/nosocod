@@ -33,14 +33,9 @@ class Base(object):
 
                 self.valid_node = True
 
-                # node.value = value
                 newnode = Node(node.name)
                 newnode.value = value
-                if self.chain:
-                    self.chain += newnode
-                else:
-                    self.chain = newnode
-                # self.chain.append(node)
+                self.chains.append(newnode)
 
                 if node.is_linked():
                     self.locked[node.get_path()] = node.get_path()
@@ -53,14 +48,27 @@ class Base(object):
 
     # rename to visit_leave
     def visitLeave(self, node):
-        self.level -= 1
         if self._is_locked(node):
             self._unlock(node)
-        if self.valid_node:
-            if not node.has_children():
-                self.chains.append(copy.deepcopy(self.chain))
-            newnode = Node(node.name)
-            self.chain -= newnode
+        if not self.valid_node:
+            self.chains = []
+            raise Exception('Not found.')
+        # if (not node.anchored
+        #     and (len(self.query.get_chunks()) - 1) == self.level):
+        #     self.chains = []
+        #     raise Exception('Not found.')
+        if (self.valid_node
+             and not node.children
+             and len(self.query.get_chunks()) > self.level):
+            self.chains = []
+            raise Exception('Not found.')
+           
+        self.level -= 1
+        # if self.valid_node:
+        #     if not node.has_children():
+        #         self.chains.append(copy.deepcopy(self.chain))
+        #     newnode = Node(node.name)
+        #     self.chain -= newnode
 
     def _is_locked(self, node):
         result = False
